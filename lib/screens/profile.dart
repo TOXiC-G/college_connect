@@ -1,8 +1,15 @@
 // Import necessary packages
 import 'package:flutter/material.dart';
 import '../common/navbar.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ProfilePage extends StatelessWidget {
+  final secureStorage = FlutterSecureStorage();
+  void _logout(BuildContext context) async {
+    await secureStorage.deleteAll();
+    Navigator.pushNamed(context, '/'); // Replace with your login screen route
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,9 +92,9 @@ class ProfilePage extends StatelessWidget {
               SizedBox(height: 20),
 
               // Logout and Change Password buttons
-              _buildButton('LOGOUT', Colors.blue),
+              _buildButton('LOGOUT', Colors.blue, context),
               SizedBox(height: 10),
-              _buildButton('CHANGE PASSWORD', Colors.red),
+              _buildButton('CHANGE PASSWORD', Colors.red, context),
               SizedBox(height: 20),
 
               // Divider
@@ -128,12 +135,12 @@ class ProfilePage extends StatelessWidget {
     return Divider(height: 1, color: Colors.grey.withOpacity(0.7));
   }
 
-  Widget _buildButton(String text, Color color) {
+  Widget _buildButton(String text, Color color, BuildContext context) {
     return ElevatedButton(
       onPressed: () {
         // Handle button tap
         if (text == 'LOGOUT') {
-          // Handle logout
+          _logout(context);
         } else if (text == 'CHANGE PASSWORD') {
           // Handle change password
         }

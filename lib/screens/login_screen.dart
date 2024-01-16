@@ -1,8 +1,67 @@
 // lib/screens/login_screen.dart
 import 'package:college_connect/app_routes.dart';
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class LoginScreen extends StatelessWidget {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final secureStorage = FlutterSecureStorage();
+  Future<void> login(BuildContext context) async {
+    const String apiUrl = 'http://192.168.0.104:8000/api/login/';
+    print("WORKING");
+    try {
+      final dio = Dio();
+      final Response response = await dio.post(
+        apiUrl,
+        data: {
+          'email': emailController.text,
+          'password': passwordController.text,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // Successful login
+        // Parse the response and store the token, role, and user attributes
+        var token = response.data['token'];
+        var role = response.data['role'];
+        var user = response.data['user'];
+        await secureStorage.write(key: 'token', value: token);
+        await secureStorage.write(key: 'role', value: role);
+        await secureStorage.write(key: 'user', value: user);
+
+        // Navigate to the next page
+        if (role == 'student') Navigator.pushNamed(context, AppRoutes.home);
+
+        if (role == 'faculty')
+          Navigator.pushNamed(context, AppRoutes.facultyHome);
+      } else {
+        // Failed login
+        Fluttertoast.showToast(
+          msg: 'Invalid credentials',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+        );
+      }
+    } catch (error) {
+      // Handle network or other errors
+      print(error.toString());
+      Fluttertoast.showToast(
+        msg: 'An error occurred. Please try again.',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,6 +104,7 @@ class LoginScreen extends StatelessWidget {
               ),
               SizedBox(height: 20),
               TextField(
+                controller: emailController,
                 decoration: InputDecoration(
                   hintText: 'Student/Faculty email',
                   prefixIcon: Icon(Icons.email),
@@ -52,6 +112,7 @@ class LoginScreen extends StatelessWidget {
               ),
               SizedBox(height: 10),
               TextField(
+                controller: passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
                   hintText: 'Password',
@@ -82,7 +143,8 @@ class LoginScreen extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {
                   // Implement Sign In logic
-                  Navigator.pushNamed(context, AppRoutes.home);
+                  print("YUH");
+                  login(context);
                 },
                 style: ElevatedButton.styleFrom(
                   primary: Color(0xFF0961F5), // Background color
