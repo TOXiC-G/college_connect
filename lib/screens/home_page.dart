@@ -1,114 +1,107 @@
 import 'package:flutter/material.dart';
+import '../common/navbar.dart';
 
 class HomePage extends StatelessWidget {
-  BottomNavigationBarItem _buildBottomNavBarItem(
-      IconData icon, String label, Color color,
-      {bool selected = false}) {
-    return BottomNavigationBarItem(
-      icon: Icon(icon, color: selected ? Color(0xFF167F71) : Color(0xFF202244)),
-      label: label,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Hi, GEC Student'),
+        automaticallyImplyLeading: false,
+        title: Text(
+          'Hi, GEC Student',
+          style: TextStyle(fontFamily: 'Jost'),
+        ),
         actions: [
           IconButton(
             icon: Icon(Icons.notifications),
             onPressed: () {
+              Navigator.pushNamed(context, '/notifications');
               // Handle notification icon tap
             },
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              '${_getCurrentDayAndDate()}',
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.search),
-                      hintText: 'Search',
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                '${_getCurrentDayAndDate()}',
+                style: TextStyle(fontSize: 18, fontFamily: 'Jost'),
+              ),
+              SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.search),
+                        hintText: 'Search',
+                      ),
                     ),
                   ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.search),
-                  onPressed: () {
-                    // Handle search icon tap
-                  },
-                ),
-              ],
-            ),
-            SizedBox(height: 16),
-            _buildClassCard(
-              title: 'Current Class: Cloud Computing (IT 531)',
-              faculty: 'Faculty: Bipin Naik',
-              time: 'Start: 9:00 AM | End: 10:00 AM',
-              buttonLabel: 'View Class',
-              buttonColor: Colors.white,
-              buttonStrokeColor: Color(0xFF167E1A),
-            ),
-            SizedBox(height: 16),
-            _buildClassCard(
-              title: 'Your Next Class: Data Analytics (CE723)',
-              faculty: 'Faculty: Mario Pinto',
-              time: 'Start: 10:00 AM | End: 11:00 AM',
-              buttonLabel: 'View Class',
-              buttonColor: Colors.transparent,
-              buttonStrokeColor: Colors.blue,
-            ),
-            SizedBox(height: 16),
-            Divider(),
-            SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildClickableCard(
-                  label: 'My Assignments',
-                  icon: Icons.assignment,
-                  onTap: () {
-                    // Handle My Assignments tap
-                  },
-                ),
-                _buildClickableCard(
-                  label: 'Announcements and Notices',
-                  icon: Icons.announcement,
-                  onTap: () {
-                    // Handle Announcements and Notices tap
-                  },
-                ),
-              ],
-            ),
-            SizedBox(height: 16),
-            _buildImageCard(
-              imagePath: 'assets/timetable.png',
-            ),
-          ],
+                ],
+              ),
+              SizedBox(height: 16),
+              _buildClassCard(
+                title: 'Current Class: Cloud Computing (IT 531)',
+                faculty: 'Faculty: Bipin Naik',
+                time: 'Start: 9:00 AM | End: 10:00 AM',
+                bgColor: Color(0xFFFAFFFA),
+                buttonLabel: 'View Class',
+                buttonColor: Colors.white,
+                buttonStrokeColor: Color(0xFF167E1A),
+              ),
+              SizedBox(height: 16),
+              _buildClassCard(
+                title: 'Your Next Class: Data Analytics (CE723)',
+                bgColor: Colors.white,
+                faculty: 'Faculty: Mario Pinto',
+                time: 'Start: 10:00 AM | End: 11:00 AM',
+                buttonLabel: 'View Class',
+                buttonColor: Colors.white,
+                buttonStrokeColor: Colors.blue,
+              ),
+              SizedBox(height: 16),
+              Divider(),
+              SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildClickableCard(
+                    label: 'My Assignments',
+                    icon: Icons.assignment,
+                    onTap: () {
+                      Navigator.pushNamed(context, '/assignments');
+                      // Handle My Assignments tap
+                    },
+                  ),
+                  // _buildClickableCard(
+                  //   label: 'Announcements',
+                  //   icon: Icons.announcement,
+                  //   onTap: () {
+                  //     // Handle Announcements and Notices tap
+                  //   },
+                  // ),
+                ],
+              ),
+              SizedBox(height: 16),
+              _buildImageCard(
+                imagePath: 'assets/images/timetable.png',
+              ),
+            ],
+          ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: [
-          _buildBottomNavBarItem(Icons.home, 'Home', Colors.green,
-              selected: true),
-          _buildBottomNavBarItem(Icons.mail, 'Inbox', Colors.black),
-          _buildBottomNavBarItem(
-              Icons.library_books, 'My Courses', Colors.black),
-          _buildBottomNavBarItem(Icons.map, 'Map', Colors.black),
-          _buildBottomNavBarItem(Icons.person, 'Profile', Colors.black),
-        ],
+      bottomNavigationBar: CommonBottomNavigationBar(
+        currentIndex: 0, // Set the index according to the current page
+        onItemSelected: (index) {
+          // Handle navigation to different pages
+          // You can use Navigator to push/pop pages as needed
+          print('Tapped on item $index');
+        },
       ),
     );
   }
@@ -116,6 +109,7 @@ class HomePage extends StatelessWidget {
   Widget _buildClassCard({
     required String title,
     required String faculty,
+    required Color bgColor,
     required String time,
     required String buttonLabel,
     required Color buttonColor,
@@ -124,9 +118,9 @@ class HomePage extends StatelessWidget {
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
-        side: BorderSide(color: Color(0xFF167E1A), width: 2),
+        side: BorderSide(color: buttonStrokeColor, width: 2),
       ),
-      color: Color(0xFFFAFFFA),
+      color: bgColor,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -162,6 +156,7 @@ class HomePage extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Card(
+        color: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: Padding(
           padding: const EdgeInsets.all(16.0),

@@ -1,4 +1,5 @@
 // lib/screens/login_screen.dart
+import 'package:college_connect/app_routes.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -81,6 +82,7 @@ class LoginScreen extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {
                   // Implement Sign In logic
+                  Navigator.pushNamed(context, AppRoutes.home);
                 },
                 style: ElevatedButton.styleFrom(
                   primary: Color(0xFF0961F5), // Background color
