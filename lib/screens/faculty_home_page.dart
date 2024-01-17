@@ -71,10 +71,10 @@ class FacultyHomePage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   _buildClickableCard(
-                    label: 'My Assignments',
+                    label: 'Take Attendance',
                     icon: Icons.assignment,
                     onTap: () {
-                      Navigator.pushNamed(context, '/assignments');
+                      Navigator.pushNamed(context, '/facultyAttendance');
                       // Handle My Assignments tap
                     },
                   ),

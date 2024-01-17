@@ -25,12 +25,16 @@ class LoginScreen extends StatelessWidget {
       if (response.statusCode == 200) {
         // Successful login
         // Parse the response and store the token, role, and user attributes
-        var token = response.data['token'];
+        var accessToken = response.data['access'];
+        var refreshToken = response.data['refresh'];
         var role = response.data['role'];
         var user = response.data['user'];
-        await secureStorage.write(key: 'token', value: token);
+        var id = response.data['id'].toString();
+        await secureStorage.write(key: 'accessToken', value: accessToken);
+        await secureStorage.write(key: 'refreshToken', value: refreshToken);
         await secureStorage.write(key: 'role', value: role);
         await secureStorage.write(key: 'user', value: user);
+        await secureStorage.write(key: 'id', value: id);
 
         // Navigate to the next page
         if (role == 'student') Navigator.pushNamed(context, AppRoutes.home);

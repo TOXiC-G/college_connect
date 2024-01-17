@@ -19,23 +19,23 @@ class CommonBottomNavigationBar extends StatelessWidget {
       items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(
           icon: Icon(Icons.home),
-          label: 'Home',
+          label: 'HOME',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.calendar_today),
-          label: 'Calendar',
+          label: 'CALENDAR',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.library_books),
-          label: 'My Courses',
+          label: 'MY COURSES',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.map),
-          label: 'Map',
+          label: 'MAP',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.person),
-          label: 'Profile',
+          label: 'PROFILE',
         ),
       ],
       selectedItemColor: Colors.green,
@@ -75,11 +75,13 @@ class CommonBottomNavigationBar extends StatelessWidget {
       },
       selectedLabelStyle: TextStyle(
         color: Colors.green,
-        fontFamily: 'Jost',
+        fontFamily: 'Mulish',
+        fontWeight: FontWeight.bold,
       ),
       unselectedLabelStyle: TextStyle(
         color: Colors.black,
-        fontFamily: 'Jost',
+        fontFamily: 'Mulish',
+        fontWeight: FontWeight.bold,
       ),
     );
   }
