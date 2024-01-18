@@ -9,6 +9,7 @@ import 'package:college_connect/screens/notifications.dart';
 import 'package:college_connect/screens/assignments.dart';
 import 'package:college_connect/screens/faculty_home_page.dart';
 import 'package:college_connect/screens/Faculty/faculty_attendance.dart';
+import 'package:college_connect/screens/Faculty/faculty_notifications.dart';
 
 class AppRoutes {
   static const String login = '/';
@@ -20,6 +21,7 @@ class AppRoutes {
   static const String assignments = '/assignments';
   static const String facultyHome = '/facultyHome';
   static const String facultyAttendance = '/facultyAttendance';
+  static const String facultyNotifications = '/facultyNotifications';
 
   static Map<String, WidgetBuilder> define() {
     return {
@@ -32,6 +34,7 @@ class AppRoutes {
       assignments: (context) => AssignmentsPage(),
       facultyHome: (context) => FacultyHomePage(),
       facultyAttendance: (context) => FacultyAttendancePage(),
+      facultyNotifications: (context) => FacultyNotificationsPage()
       // Add more routes as needed
     };
   }

@@ -4,11 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:firebase_core/firebase_core.dart';
+import '../api/firebase_api.dart';
+import 'dart:io' show Platform;
 
 class LoginScreen extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final secureStorage = FlutterSecureStorage();
+
   Future<void> login(BuildContext context) async {
     const String apiUrl = 'http://192.168.0.104:8000/api/login/';
     print("WORKING");
@@ -35,7 +39,16 @@ class LoginScreen extends StatelessWidget {
         await secureStorage.write(key: 'role', value: role);
         await secureStorage.write(key: 'user', value: user);
         await secureStorage.write(key: 'id', value: id);
-
+        WidgetsFlutterBinding.ensureInitialized();
+        Platform.isAndroid
+            ? await Firebase.initializeApp(
+                options: const FirebaseOptions(
+                    apiKey: 'AIzaSyCsC3adhpsZLqJ9TWOkpcKqdjN0cGMyFf4',
+                    appId: '1:427827354834:android:42c46a5017a72d0217210b',
+                    messagingSenderId: '427827354834',
+                    projectId: 'collegeconnect-c4527'))
+            : await Firebase.initializeApp();
+        await FirebaseApi().initNotifications();
         // Navigate to the next page
         if (role == 'student') Navigator.pushNamed(context, AppRoutes.home);
 
@@ -169,9 +182,7 @@ class LoginScreen extends StatelessWidget {
                   maxWidth: 70,
                 ),
                 child: OutlinedButton(
-                  onPressed: () {
-                    // Implement Guest Sign In logic
-                  },
+                  onPressed: () {},
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(color: Color(0xFF122966)), // Border color
                   ),

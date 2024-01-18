@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import '../common/navbar.dart';
+import 'package:firebase_core/firebase_core.dart';
+import '../api/firebase_api.dart';
+import 'dart:io' show Platform;
 
 class FacultyHomePage extends StatelessWidget {
   @override
@@ -15,7 +18,7 @@ class FacultyHomePage extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.notifications),
             onPressed: () {
-              Navigator.pushNamed(context, '/notifications');
+              Navigator.pushNamed(context, '/facultyNotifications');
               // Handle notification icon tap
             },
           ),
@@ -190,7 +193,7 @@ class FacultyHomePage extends StatelessWidget {
   }
 }
 
-void main() {
+void main() async {
   runApp(MaterialApp(
     home: FacultyHomePage(),
   ));

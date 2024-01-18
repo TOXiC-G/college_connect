@@ -1,3 +1,4 @@
 {
-  "cmake.sourceDirectory": "D:/college_connect/windows"
+  "cmake.sourceDirectory": "D:/college_connect/windows",
+  "java.configuration.updateBuildConfiguration": "interactive"
 }

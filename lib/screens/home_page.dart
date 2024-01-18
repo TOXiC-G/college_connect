@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import '../common/navbar.dart';
+import 'package:firebase_core/firebase_core.dart';
+import '../api/firebase_api.dart';
+import 'dart:io' show Platform;
 
 class HomePage extends StatelessWidget {
   @override
@@ -190,7 +193,9 @@ class HomePage extends StatelessWidget {
   }
 }
 
-void main() {
+void main() async {
+  print("DEFINITELY IN MAIN");
+
   runApp(MaterialApp(
     home: HomePage(),
   ));
