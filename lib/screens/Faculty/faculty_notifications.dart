@@ -17,8 +17,10 @@ class _FacultyNotificationsPageState extends State<FacultyNotificationsPage> {
 
   Future<void> sendNotification(BuildContext context) async {
     const secureStorage = FlutterSecureStorage();
+    // const String apiUrl =
+    //     'http://192.168.0.104:8000/api/faculty/sendNotification/';
     const String apiUrl =
-        'http://192.168.0.104:8000/api/faculty/sendNotification/';
+        'http://147.185.221.17:22244/api/faculty/sendNotification/'; //Playit
     try {
       final dio = Dio();
       String? token = await secureStorage.read(key: 'accessToken');

@@ -10,6 +10,9 @@ import 'package:college_connect/screens/assignments.dart';
 import 'package:college_connect/screens/faculty_home_page.dart';
 import 'package:college_connect/screens/Faculty/faculty_attendance.dart';
 import 'package:college_connect/screens/Faculty/faculty_notifications.dart';
+import 'package:college_connect/screens/profile_gp.dart';
+import 'package:college_connect/screens/CGPA_calculator.dart';
+import 'package:college_connect/screens/Payment.dart';
 
 class AppRoutes {
   static const String login = '/';
@@ -22,6 +25,9 @@ class AppRoutes {
   static const String facultyHome = '/facultyHome';
   static const String facultyAttendance = '/facultyAttendance';
   static const String facultyNotifications = '/facultyNotifications';
+  static const String profile_gp = "/profile_gp";
+  static const String cgpaCalculator = '/cgpaCalculator';
+  static const String paymentHome = '/paymentHome';
 
   static Map<String, WidgetBuilder> define() {
     return {
@@ -34,7 +40,10 @@ class AppRoutes {
       assignments: (context) => AssignmentsPage(),
       facultyHome: (context) => FacultyHomePage(),
       facultyAttendance: (context) => FacultyAttendancePage(),
-      facultyNotifications: (context) => FacultyNotificationsPage()
+      facultyNotifications: (context) => FacultyNotificationsPage(),
+      profile_gp: (context) => Profile_gp(),
+      cgpaCalculator: (context) => CGPACalculator(),
+      paymentHome: (context) => PaymentHome(),
       // Add more routes as needed
     };
   }

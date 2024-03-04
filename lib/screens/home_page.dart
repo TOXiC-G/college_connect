@@ -1,29 +1,15 @@
 import 'package:flutter/material.dart';
 import '../common/navbar.dart';
+import '../common/sidebar.dart';
 import 'package:firebase_core/firebase_core.dart';
 import '../api/firebase_api.dart';
 import 'dart:io' show Platform;
+import 'package:intl/intl.dart';
 
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text(
-          'Hi, GEC Student',
-          style: TextStyle(fontFamily: 'Jost'),
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.notifications),
-            onPressed: () {
-              Navigator.pushNamed(context, '/notifications');
-              // Handle notification icon tap
-            },
-          ),
-        ],
-      ),
+    return CommonSideBar(
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -91,20 +77,12 @@ class HomePage extends StatelessWidget {
                 ],
               ),
               SizedBox(height: 16),
-              _buildImageCard(
-                imagePath: 'assets/images/timetable.png',
-              ),
+              // _buildImageCard(
+              //   imagePath: 'assets/images/timetable.png',
+              // ),
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: CommonBottomNavigationBar(
-        currentIndex: 0, // Set the index according to the current page
-        onItemSelected: (index) {
-          // Handle navigation to different pages
-          // You can use Navigator to push/pop pages as needed
-          print('Tapped on item $index');
-        },
       ),
     );
   }
@@ -186,10 +164,13 @@ class HomePage extends StatelessWidget {
   }
 
   String _getCurrentDayAndDate() {
-    // Implement logic to get the current day and date
-    // For example, you can use the intl package:
-    // https://pub.dev/packages/intl
-    return 'Monday, November 20, 2023';
+    // Get the current date and time
+    DateTime now = DateTime.now();
+
+    // Format the date using the desired format
+    String formattedDate = DateFormat('EEEE, MMMM d, y').format(now);
+
+    return formattedDate;
   }
 }
 

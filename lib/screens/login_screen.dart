@@ -11,10 +11,12 @@ import 'dart:io' show Platform;
 class LoginScreen extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final ValueNotifier<bool> obscureTextNotifier = ValueNotifier<bool>(true);
   final secureStorage = FlutterSecureStorage();
 
   Future<void> login(BuildContext context) async {
-    const String apiUrl = 'http://192.168.0.104:8000/api/login/';
+    const String apiUrl = 'http://192.168.0.105:8000/api/login/'; // Local
+    // const String apiUrl = 'http://147.185.221.17:22244/api/login/'; //Playit
     print("WORKING");
     try {
       final dio = Dio();
@@ -128,20 +130,22 @@ class LoginScreen extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 10),
-              TextField(
-                controller: passwordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  hintText: 'Password',
-                  prefixIcon: Icon(Icons.lock),
-                  suffixIcon: IconButton(
-                    icon: Icon(Icons.visibility),
-                    onPressed: () {
-                      // Toggle password visibility
-                    },
-                  ),
-                ),
-              ),
+              PasswordField(passwordController: passwordController),
+              // TextField(
+              //   controller: passwordController,
+              //   obscureText: obscureTextNotifier.value,
+              //   decoration: InputDecoration(
+              //     hintText: 'Password',
+              //     prefixIcon: Icon(Icons.lock),
+              //     suffixIcon: IconButton(
+              //       icon: Icon(Icons.visibility),
+              //       onPressed: () {
+              //         obscureTextNotifier.value = !obscureTextNotifier.value;
+              //         // Toggle password visibility
+              //       },
+              //     ),
+              //   ),
+              // ),
               SizedBox(height: 10),
               Row(
                 children: [
@@ -182,7 +186,9 @@ class LoginScreen extends StatelessWidget {
                   maxWidth: 70,
                 ),
                 child: OutlinedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pushNamed(context, AppRoutes.profile_gp);
+                  },
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(color: Color(0xFF122966)), // Border color
                   ),
@@ -207,6 +213,42 @@ class LoginScreen extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class PasswordField extends StatefulWidget {
+  final TextEditingController passwordController;
+
+  PasswordField({required this.passwordController});
+
+  @override
+  _PasswordFieldState createState() => _PasswordFieldState();
+}
+
+class _PasswordFieldState extends State<PasswordField> {
+  // TextEditingController _passwordController = TextEditingController();
+  bool _isPasswordVisible = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: widget.passwordController,
+      obscureText: !_isPasswordVisible,
+      decoration: InputDecoration(
+        hintText: 'Password',
+        prefixIcon: Icon(Icons.lock),
+        suffixIcon: IconButton(
+          icon: _isPasswordVisible
+              ? Icon(Icons.visibility)
+              : Icon(Icons.visibility_off),
+          onPressed: () {
+            setState(() {
+              _isPasswordVisible = !_isPasswordVisible;
+            });
+          },
         ),
       ),
     );

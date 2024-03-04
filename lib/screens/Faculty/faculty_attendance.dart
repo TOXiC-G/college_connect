@@ -65,7 +65,9 @@ class _FacultyAttendancePageState extends State<FacultyAttendancePage> {
 
   Future<void> get_courses(BuildContext context) async {
     const secureStorage = FlutterSecureStorage();
-    const String apiUrl = 'http://192.168.0.104:8000/api/faculty/get_courses/';
+    // const String apiUrl = 'http://192.168.0.104:8000/api/faculty/get_courses/';
+    const String apiUrl =
+        'http://147.185.221.17:22244/api/faculty/get_courses/'; //Playit
     String? id = await secureStorage.read(key: 'id');
     try {
       final dio = Dio();
@@ -116,8 +118,10 @@ class _FacultyAttendancePageState extends State<FacultyAttendancePage> {
   late List<Student> currentStudentList = [];
   Future<void> getStudents(BuildContext context, courseId) async {
     const secureStorage = FlutterSecureStorage();
+    // const String apiUrl =
+    //     'http://192.168.0.104:8000/api/faculty/get_course_students/';
     const String apiUrl =
-        'http://192.168.0.104:8000/api/faculty/get_course_students/';
+        'http://147.185.221.17:22244/api/faculty/get_course_students/'; //Playit
     try {
       final dio = Dio();
       String? token = await secureStorage.read(key: 'accessToken');
@@ -184,8 +188,10 @@ class _FacultyAttendancePageState extends State<FacultyAttendancePage> {
 
   Future setAttendance(BuildContext context, courseId, date, attendance) async {
     const secureStorage = FlutterSecureStorage();
+    // const String apiUrl =
+    //     'http://192.168.0.104:8000/api/faculty/set_course_attendance/';
     const String apiUrl =
-        'http://192.168.0.104:8000/api/faculty/set_course_attendance/';
+        'http://147.185.221.17:22244/api/faculty/set_course_attendance/'; //Playit
     try {
       final dio = Dio();
       String? token = await secureStorage.read(key: 'accessToken');

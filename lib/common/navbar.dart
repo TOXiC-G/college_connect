@@ -19,23 +19,23 @@ class CommonBottomNavigationBar extends StatelessWidget {
       items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(
           icon: Icon(Icons.home),
-          label: 'HOME',
+          label: '',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.calendar_today),
-          label: 'CALENDAR',
+          label: '',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.library_books),
-          label: 'MY COURSES',
+          label: '',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.map),
-          label: 'MAP',
+          label: '',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.person),
-          label: 'PROFILE',
+          label: '',
         ),
       ],
       selectedItemColor: Colors.green,
