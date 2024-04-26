@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
 import './navbar.dart';
+import './appbar.dart';
 
 class CommonSideBar extends StatelessWidget {
   final Widget body;
+  final String title;
 
-  CommonSideBar({required this.body});
+  CommonSideBar({
+    required this.body,
+    required this.title,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.indigo,
         title: Text(
-          'Hi, GEC Student',
-          style: TextStyle(fontFamily: 'Jost'),
+          title,
+          style: TextStyle(fontFamily: 'Jost', color: Colors.white),
         ),
         leading: Builder(
           builder: (BuildContext context) {

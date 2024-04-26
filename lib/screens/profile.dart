@@ -1,23 +1,125 @@
 // Import necessary packages
 import 'package:flutter/material.dart';
-import '../common/navbar.dart';
+// import '../common/navbar.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../common/navbar.dart';
+import '../common/appbar.dart';
+import '../common/dio.config.dart';
+import 'package:dio/dio.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter/material.dart';
 
-class ProfilePage extends StatelessWidget {
+class Profile {
+  final String name;
+  final String email;
+  final String stream;
+  final String profilePic;
+
+  final String? designation;
+  // final String? phone;
+
+  final String? roll;
+  final String? year;
+  final String? batch;
+  final String? prNo;
+
+  Profile({
+    required this.name,
+    required this.email,
+    required this.stream,
+    required this.profilePic,
+    this.designation,
+    // this.phone,
+    this.roll,
+    this.year,
+    this.batch,
+    this.prNo,
+  });
+
+  factory Profile.fromJson(Map<String, dynamic> json) {
+    return Profile(
+      name: json['name'].toString(),
+      email: json['email'].toString(),
+      stream: json['stream'].toString(),
+      profilePic: json['profile_pic'].toString(),
+      designation: json['designation'].toString(),
+      // phone: json['phone'],
+      roll: json['roll'].toString(),
+      year: json['year'].toString(),
+      batch: json['batch'].toString(),
+      prNo: json['pr_no'].toString(),
+    );
+  }
+}
+
+class ProfilePage extends StatefulWidget {
+  @override
+  _ProfilePageState createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  Map<String, dynamic> _profile = {};
+
+  @override
+  void initState() {
+    super.initState();
+    fetchProfile();
+  }
+
   final secureStorage = FlutterSecureStorage();
   void _logout(BuildContext context) async {
     await secureStorage.deleteAll();
     Navigator.pushNamed(context, '/'); // Replace with your login screen route
   }
 
+  Future<void> fetchProfile() async {
+    final secureStorage = FlutterSecureStorage();
+    String? id = await secureStorage.read(key: 'id');
+    String? role = await secureStorage.read(key: 'role');
+    try {
+      final dioClient = DioClient();
+      await dioClient.setAuthorizationHeader();
+      final Response response = await dioClient.dio.post(
+        'api/profile/',
+        data: {
+          'id': id,
+          'role': role,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          _profile = response.data;
+        });
+        print(_profile);
+      } else {
+        Fluttertoast.showToast(
+          msg: 'Failed to fetch courses',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+        );
+      }
+    } catch (error) {
+      print(error.toString());
+      Fluttertoast.showToast(
+        msg: 'An error occurred. Please try again.',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'PROFILE',
-          style: TextStyle(color: Color(0xFF202244), fontFamily: 'Jost'),
-        ),
+      appBar: CommonAppBar(
+        title: 'PROFILE',
         // Remove the back arrow
         automaticallyImplyLeading: false,
       ),
@@ -33,15 +135,22 @@ class ProfilePage extends StatelessWidget {
                   // Handle avatar upload button tap
                   // You can add image upload logic here
                 },
-                child: CircleAvatar(
-                  radius: 60,
-                  backgroundColor: Colors.blue, // You can customize the color
-                  child: Icon(
-                    Icons.camera_alt,
-                    size: 40,
-                    color: Colors.white,
-                  ),
-                ),
+                child: _profile.isNotEmpty
+                    ? CircleAvatar(
+                        radius: 60,
+                        backgroundColor:
+                            Colors.blue, // You can customize the color
+                        backgroundImage: NetworkImage(_profile['profile_pic']),
+                      )
+                    : CircleAvatar(
+                        radius: 60,
+                        backgroundColor:
+                            Colors.blue, // You can customize the color
+                        child: Icon(
+                          Icons.camera_alt,
+                          color: Colors.white,
+                        ),
+                      ),
               ),
               SizedBox(height: 10),
 
@@ -64,25 +173,21 @@ class ProfilePage extends StatelessWidget {
                 ),
                 padding: EdgeInsets.all(16),
                 child: Column(
-                  children: [
-                    _buildAttribute('Full Name', 'Student Name'),
-                    _buildDivider(),
-                    _buildAttribute('Email ID', 'Student Email'),
-                    _buildDivider(),
-                    _buildAttribute('Roll No', 'Student Roll'),
-                    _buildDivider(),
-                    _buildAttribute('PR NO', 'STUDENT PR'),
-                    _buildDivider(),
-                    _buildAttribute('Admission Year', '20XX'),
-                    _buildDivider(),
-                    _buildAttribute('PROGRAM', 'PROGRAM NAME'),
-                    _buildDivider(),
-                    _buildAttribute('SEMESTER', 'Semester No.'),
-                    _buildDivider(),
-                    _buildAttribute('BATCH', 'Batch Name'),
-                    _buildDivider(),
-                    _buildAttribute('CLASS NO', 'Class No.'),
-                  ],
+                  children: _profile.isNotEmpty
+                      ? _profile.keys
+                          .where((key) => key != 'profile_pic')
+                          .map((key) {
+                          return Column(
+                            children: [
+                              _buildAttribute(
+                                  key.substring(0, 1).toUpperCase() +
+                                      key.substring(1),
+                                  _profile[key].toString()),
+                              _buildDivider(),
+                            ],
+                          );
+                        }).toList()
+                      : [],
                 ),
               ),
               SizedBox(height: 20),
@@ -129,6 +234,7 @@ class ProfilePage extends StatelessWidget {
         ),
       ],
     );
+    return Container();
   }
 
   Widget _buildDivider() {
@@ -146,7 +252,8 @@ class ProfilePage extends StatelessWidget {
         }
       },
       style: ElevatedButton.styleFrom(
-        foregroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
+        foregroundColor: Colors.transparent,
         backgroundColor: Colors.white,
         side: BorderSide(color: color, width: 2),
         shape: RoundedRectangleBorder(

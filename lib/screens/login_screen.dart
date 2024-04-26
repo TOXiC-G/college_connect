@@ -6,6 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import '../api/firebase_api.dart';
+import '../common/dio.config.dart';
 import 'dart:io' show Platform;
 
 class LoginScreen extends StatelessWidget {
@@ -15,13 +16,11 @@ class LoginScreen extends StatelessWidget {
   final secureStorage = FlutterSecureStorage();
 
   Future<void> login(BuildContext context) async {
-    const String apiUrl = 'http://192.168.0.105:8000/api/login/'; // Local
-    // const String apiUrl = 'http://147.185.221.17:22244/api/login/'; //Playit
     print("WORKING");
     try {
-      final dio = Dio();
-      final Response response = await dio.post(
-        apiUrl,
+      final dioClient = DioClient();
+      final Response response = await dioClient.dio.post(
+        '/api/login/',
         data: {
           'email': emailController.text,
           'password': passwordController.text,
@@ -79,6 +78,112 @@ class LoginScreen extends StatelessWidget {
         textColor: Colors.white,
       );
     }
+  }
+
+  Future<void> faculty(BuildContext context) async {
+    final dioClient = DioClient();
+    final Response response = await dioClient.dio.post(
+      '/api/login/',
+      data: {
+        'email': 'defaultFaculty@example.com',
+        'password': 'faculty_password',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      // Successful login
+      // Parse the response and store the token, role, and user attributes
+      var accessToken = response.data['access'];
+      var refreshToken = response.data['refresh'];
+      var role = response.data['role'];
+      var user = response.data['user'];
+      var id = response.data['id'].toString();
+      await secureStorage.write(key: 'accessToken', value: accessToken);
+      await secureStorage.write(key: 'refreshToken', value: refreshToken);
+      await secureStorage.write(key: 'role', value: role);
+      await secureStorage.write(key: 'user', value: user);
+      await secureStorage.write(key: 'id', value: id);
+      WidgetsFlutterBinding.ensureInitialized();
+      Platform.isAndroid
+          ? await Firebase.initializeApp(
+              options: const FirebaseOptions(
+                  apiKey: 'AIzaSyCsC3adhpsZLqJ9TWOkpcKqdjN0cGMyFf4',
+                  appId: '1:427827354834:android:42c46a5017a72d0217210b',
+                  messagingSenderId: '427827354834',
+                  projectId: 'collegeconnect-c4527'))
+          : await Firebase.initializeApp();
+      await FirebaseApi().initNotifications();
+      // Navigate to the next page
+      if (role == 'student') Navigator.pushNamed(context, AppRoutes.home);
+
+      if (role == 'faculty')
+        Navigator.pushNamed(context, AppRoutes.facultyHome);
+    } else {
+      // Failed login
+      Fluttertoast.showToast(
+        msg: 'Invalid credentials',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+    }
+
+    await secureStorage.write(key: 'role', value: 'faculty');
+  }
+
+  Future<void> student(BuildContext context) async {
+    final dioClient = DioClient();
+    final Response response = await dioClient.dio.post(
+      '/api/login/',
+      data: {
+        'email': 'defaultStudent@example.com',
+        'password': 'student_password',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      // Successful login
+      // Parse the response and store the token, role, and user attributes
+      var accessToken = response.data['access'];
+      var refreshToken = response.data['refresh'];
+      var role = response.data['role'];
+      var user = response.data['user'];
+      var id = response.data['id'].toString();
+      await secureStorage.write(key: 'accessToken', value: accessToken);
+      await secureStorage.write(key: 'refreshToken', value: refreshToken);
+      await secureStorage.write(key: 'role', value: role);
+      await secureStorage.write(key: 'user', value: user);
+      await secureStorage.write(key: 'id', value: id);
+      WidgetsFlutterBinding.ensureInitialized();
+      Platform.isAndroid
+          ? await Firebase.initializeApp(
+              options: const FirebaseOptions(
+                  apiKey: 'AIzaSyCsC3adhpsZLqJ9TWOkpcKqdjN0cGMyFf4',
+                  appId: '1:427827354834:android:42c46a5017a72d0217210b',
+                  messagingSenderId: '427827354834',
+                  projectId: 'collegeconnect-c4527'))
+          : await Firebase.initializeApp();
+      await FirebaseApi().initNotifications();
+      // Navigate to the next page
+      if (role == 'student') Navigator.pushNamed(context, AppRoutes.home);
+
+      if (role == 'faculty')
+        Navigator.pushNamed(context, AppRoutes.facultyHome);
+    } else {
+      // Failed login
+      Fluttertoast.showToast(
+        msg: 'Invalid credentials',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+    }
+
+    await secureStorage.write(key: 'role', value: 'student');
   }
 
   @override
@@ -164,8 +269,8 @@ class LoginScreen extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {
                   // Implement Sign In logic
-                  print("YUH");
-                  login(context);
+                  faculty(context);
+                  // login(context);
                 },
                 style: ElevatedButton.styleFrom(
                   primary: Color(0xFF0961F5), // Background color
@@ -187,7 +292,8 @@ class LoginScreen extends StatelessWidget {
                 ),
                 child: OutlinedButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, AppRoutes.profile_gp);
+                    // Navigator.pushNamed(context, AppRoutes.profileGp);
+                    student(context);
                   },
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(color: Color(0xFF122966)), // Border color

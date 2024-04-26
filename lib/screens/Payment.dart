@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'CGPA_calculator.dart';
+import "package:college_connect/common/dio.config.dart";
+import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 // import 'sgpa_extractor.dart';
 
 // void main() {
@@ -29,6 +33,46 @@ class Subject {
   bool selected;
 
   Subject(this.name, this.fee, this.selected);
+}
+
+Future<void> _makeAnnoucement() async {
+  try {
+    final dioClient = DioClient();
+    await dioClient.setAuthorizationHeader();
+
+    final Response response =
+        await dioClient.dio.get('api/faculty/send_email/');
+
+    if (response.statusCode == 200) {
+      Fluttertoast.showToast(
+        msg: 'Email Sent to Parent Email Succesfully',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+      );
+    } else {
+      Fluttertoast.showToast(
+        msg: 'Failed to fetch courses',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+    }
+  } catch (error) {
+    print(error.toString());
+    Fluttertoast.showToast(
+      msg: 'An error occurred. Please try again.',
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Colors.red,
+      textColor: Colors.white,
+    );
+  }
 }
 
 class PaymentHome extends StatelessWidget {
@@ -147,6 +191,7 @@ class _SemesterPaymentScreenState extends State<SemesterPaymentScreen> {
 
   void _downloadReceipt(String type) {
     // Placeholder function to download receipt
+    _makeAnnoucement();
     print('Downloading receipt for $type');
   }
 
@@ -197,6 +242,7 @@ class _SemesterPaymentScreenState extends State<SemesterPaymentScreen> {
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
     // Do something when payment succeeds
+    _makeAnnoucement();
     _checkFeesPaid();
   }
 
@@ -385,9 +431,9 @@ class _SemesterPaymentScreenState extends State<SemesterPaymentScreen> {
         break;
       case 8:
         subjects = [
-          Subject('Cryptography & Network Security', 1000, false),
-          Subject('PE 1 - Mobile Computing', 700, false),
-          Subject('Project Phase II ', 1700, false),
+          Subject('Cryptography & Network Security', 1, false),
+          Subject('PE 1 - Mobile Computing', 2, false),
+          Subject('Project Phase II ', 3, false),
         ];
         break;
       // Add cases for other semesters

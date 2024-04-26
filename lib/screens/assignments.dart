@@ -1,15 +1,113 @@
 import 'package:flutter/material.dart';
 import '../common/navbar.dart';
+import '../common/appbar.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../../common/dio.config.dart';
+import 'package:dio/dio.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
-class AssignmentsPage extends StatelessWidget {
+class Assignment {
+  final String assignmentId;
+  final String assignmentNo;
+  final String dueDate;
+  final String uploadedBy;
+  final String course;
+  final String? attachments;
+
+  Assignment({
+    required this.assignmentId,
+    required this.assignmentNo,
+    required this.dueDate,
+    required this.uploadedBy,
+    required this.course,
+    this.attachments,
+  });
+
+  factory Assignment.fromJson(Map<String, dynamic> json) {
+    print("HERE");
+    return Assignment(
+        assignmentId: json['assignment_id'].toString(),
+        assignmentNo: json['assignment_no'].toString(),
+        dueDate: json['due_date'].toString(),
+        uploadedBy: json['uploaded_by'].toString(),
+        course: json['course'].toString(),
+        attachments: json['attachments'].toString());
+  }
+}
+
+class AssignmentsPage extends StatefulWidget {
+  @override
+  AssignmentsPageState createState() => AssignmentsPageState();
+}
+
+class AssignmentsPageState extends State<AssignmentsPage> {
+  @override
+  void initState() {
+    super.initState();
+    getAssignments();
+  }
+
+  Map<String, List<Assignment>> assignmentList = {};
+  Future<void> getAssignments() async {
+    const secureStorage = FlutterSecureStorage();
+    String? id = await secureStorage.read(key: 'id');
+    try {
+      final dioClient = DioClient();
+      String? token = await secureStorage.read(key: 'accessToken');
+      String tokenString = token.toString();
+      dioClient.dio.options.headers['Authorization'] = 'Bearer $tokenString';
+      final Response response = await dioClient.dio.post(
+        '/api/student/get_assignments/',
+        data: {
+          'student_id': id,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        print(response.data);
+        // Successful login
+        Map<String, dynamic> assignmentDataMap = response.data;
+        setState(() {
+          assignmentList = assignmentDataMap.map((key, value) {
+            // Convert the list of assignments to a list of Assignment objects
+            List<Assignment> assignments = (value as List<dynamic>)
+                .map((assignmentData) => Assignment.fromJson(assignmentData))
+                .toList();
+            return MapEntry(key, assignments);
+          });
+        });
+        print(assignmentList);
+      } else {
+        // Failed login
+        Fluttertoast.showToast(
+          msg: 'Invalid credentials',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+        );
+      }
+    } catch (error) {
+      // Handle network or other errors
+      print(error.toString());
+      Fluttertoast.showToast(
+        msg: 'An error occurred. Please try again.',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'NOTIFICATIONS',
-          style: TextStyle(color: Color(0xFF202244), fontFamily: 'Jost'),
-        ),
+      appBar: CommonAppBar(
+        title: 'ASSIGNMENTS',
+        automaticallyImplyLeading: true,
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -45,39 +143,28 @@ class AssignmentsPage extends StatelessWidget {
               ),
               SizedBox(height: 20),
               // Notifications
-              Text(
-                'CLOUD COMPUTING (IT 531)',
-                style: TextStyle(
-                    fontFamily: 'Jost',
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold),
-              ),
-              _buildNotificationContainer(
-                'CLOUD COMPUTING - ASSIGNMENT 1',
-                '24-02-2024',
-                'BIPIN NAIK',
-                Colors.black,
-              ),
-              _buildNotificationContainer(
-                'CLOUD COMPUTING - ASSIGNMENT 2',
-                '31-02-2024',
-                'BIPIN NAIK',
-                Colors.black,
-              ),
-
-              Text(
-                'DATA ANALYTICS (CE 723)',
-                style: TextStyle(
-                    fontFamily: 'Jost',
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold),
-              ),
-              _buildNotificationContainer(
-                'DATA ANALYTICS - ASSIGNMENT 1',
-                '24-02-2024',
-                'MARIO PINTO',
-                Colors.black,
-              ),
+              for (String courseName in assignmentList.keys)
+                if (assignmentList[courseName]!.isNotEmpty)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        courseName,
+                        style: TextStyle(
+                            fontFamily: 'Jost',
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      for (Assignment assignment in assignmentList[courseName]!)
+                        _buildNotificationContainer(
+                          'Assignment ' + assignment.assignmentNo,
+                          assignment.dueDate,
+                          assignment.uploadedBy,
+                          Colors.indigo,
+                          assignment.course,
+                        ),
+                    ],
+                  ),
             ],
           ),
         ),
@@ -127,25 +214,32 @@ class AssignmentsPage extends StatelessWidget {
     String dueDate,
     String uploadedBy,
     Color strokeColor,
+    String courseId,
   ) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 10),
-      padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: strokeColor,
-          width: 1,
+    return GestureDetector(
+      onTap: () {
+        // Handle onTap event
+        print(courseId);
+      },
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 10),
+        padding: EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: strokeColor,
+            width: 1,
+          ),
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildAttribute('TITLE', title),
-          _buildAttribute('DUE ON', dueDate),
-          _buildAttribute('UPLOADED BY', uploadedBy),
-        ],
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildAttribute('TITLE', title),
+            _buildAttribute('DUE ON', dueDate),
+            _buildAttribute('UPLOADED BY', uploadedBy),
+          ],
+        ),
       ),
     );
   }

@@ -1,7 +1,36 @@
 // Import necessary packages
+import 'package:college_connect/common/appbar.dart';
 import 'package:flutter/material.dart';
 import '../common/navbar.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../../common/dio.config.dart';
+import 'package:dio/dio.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
+class Course {
+  final String courseId;
+  final String courseCode;
+  final String stream;
+  final String courseSem;
+  final String courseName;
+
+  Course(
+      {required this.courseId,
+      required this.courseCode,
+      required this.stream,
+      required this.courseSem,
+      required this.courseName});
+  factory Course.fromJson(Map<String, dynamic> json) {
+    return Course(
+      courseId: json['course_id'].toString(),
+      courseCode: json['course_code'].toString(),
+      stream: json['stream'].toString(),
+      courseSem: json['course_sem'].toString(),
+      courseName: json['course_name'].toString(),
+    );
+  }
+}
 
 class AttendancePage extends StatefulWidget {
   @override
@@ -9,8 +38,9 @@ class AttendancePage extends StatefulWidget {
 }
 
 class _AttendancePageState extends State<AttendancePage> {
+  late List<Course> courseList = [];
   // Placeholder for fetched attendance data
-  List<int> presentDates = [5, 10, 15, 20, 25]; // Replace with actual data
+  late List<int> presentDates = [];
 
   // Placeholder for selected course in dropdown
   String? selectedCourse;
@@ -18,16 +48,96 @@ class _AttendancePageState extends State<AttendancePage> {
   // Placeholder for current month
   DateTime selectedMonth = DateTime.now();
 
+  Future<void> fetchCourses(BuildContext context) async {
+    const secureStorage = FlutterSecureStorage();
+    String? role = await secureStorage.read(key: 'role');
+    String? id = await secureStorage.read(key: 'id');
+    String api = 'api/${role}/get_courses/';
+    try {
+      final dioClient = DioClient();
+      await dioClient.setAuthorizationHeader();
+      final Response response = await dioClient.dio.post(
+        api,
+        data: {
+          '${role}_id': id,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        List<dynamic> courseDataList = response.data;
+        setState(() {
+          courseList = courseDataList
+              .map((courseData) => Course.fromJson(courseData))
+              .toList();
+        });
+      }
+    } catch (e) {
+      print(e);
+      // Show a toast message if there is an error
+      Fluttertoast.showToast(
+        msg: 'An error occurred. Please try again later.',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
+  }
+
+  Future<void> fetchAttendance(String courseId) async {
+    const secureStorage = FlutterSecureStorage();
+    String? role = await secureStorage.read(key: 'role');
+    String? id = await secureStorage.read(key: 'id');
+    try {
+      final dioClient = DioClient();
+      await dioClient.setAuthorizationHeader();
+      final Response response = await dioClient.dio.post(
+        'api/attendance/',
+        data: {
+          'id': id,
+          'role': role,
+          'course_id': courseId,
+          'month': selectedMonth.month,
+          'year': selectedMonth.year,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        List<dynamic> attendanceData = response.data;
+        List<int> attendance =
+            attendanceData.map((data) => int.parse(data)).toList();
+        setState(() {
+          presentDates = attendance;
+        });
+      }
+    } catch (e) {
+      print(e);
+      // Show a toast message if there is an error
+      Fluttertoast.showToast(
+        msg: 'An error occurred. Please try again later.',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchCourses(context); // Call your API function here
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text(
-          'ATTENDANCE',
-          style: TextStyle(color: Color(0xFF202244), fontFamily: 'Jost'),
-        ),
-      ),
+      appBar:
+          CommonAppBar(automaticallyImplyLeading: false, title: 'ATTENDANCE'),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -63,13 +173,15 @@ class _AttendancePageState extends State<AttendancePage> {
                         setState(() {
                           selectedCourse = newValue!;
                         });
+                        fetchAttendance(newValue!);
+                        print(newValue);
                         // Replace the comment with your API call for course-specific data
                       },
-                      items: <String>['Course A', 'Course B', 'Course C']
-                          .map<DropdownMenuItem<String>>((String value) {
+                      items: courseList
+                          .map<DropdownMenuItem<String>>((Course course) {
                         return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
+                          value: course.courseId,
+                          child: Text(course.courseName),
                         );
                       }).toList(),
                     ),
@@ -86,17 +198,45 @@ class _AttendancePageState extends State<AttendancePage> {
               lastDay: DateTime(2050),
               calendarFormat: CalendarFormat.month,
               onFormatChanged: (format) {},
-              onDaySelected: (selectedDay, focusedDay) {
-                // Replace the comment with your API call for fetching attendance data
-                // Check if the selected day is present, and highlight accordingly
-                if (presentDates.contains(selectedDay.day)) {
-                  // Day is present, highlight in green
-                  print('Day $selectedDay is present!');
-                } else {
-                  // Day is not present
-                  print('Day $selectedDay is not present.');
+              onPageChanged: (focusedDay) {
+                selectedMonth = focusedDay;
+                if (selectedCourse != null) {
+                  fetchAttendance(selectedCourse!);
                 }
               },
+              onDaySelected: (selectedDay, focusedDay) {
+                // Handle day selection if needed
+                // print(selectedDay);
+                if (presentDates.contains(selectedDay.day)) {
+                  print(selectedDay);
+                }
+              },
+              calendarBuilders: CalendarBuilders(
+                // Customize the appearance of each day
+                defaultBuilder: (context, date, _) {
+                  if (presentDates.contains(date.day)) {
+                    // Day is present, highlight in green
+                    return Container(
+                      margin: const EdgeInsets.all(4.0),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        // color: Colors.green.withOpacity(0.5),
+                        border: Border.all(color: Colors.green, width: 1),
+                      ),
+                      child: Text(
+                        '${date.day}',
+                        style: TextStyle(
+                          color: Colors.black,
+                        ),
+                      ),
+                    );
+                  } else {
+                    // Day is not present, leave it unchanged
+                    return null;
+                  }
+                },
+              ),
               calendarStyle: CalendarStyle(
                 todayDecoration: BoxDecoration(
                   color: Color(0xFF735BF2),

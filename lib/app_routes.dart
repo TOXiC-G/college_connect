@@ -10,9 +10,19 @@ import 'package:college_connect/screens/assignments.dart';
 import 'package:college_connect/screens/faculty_home_page.dart';
 import 'package:college_connect/screens/Faculty/faculty_attendance.dart';
 import 'package:college_connect/screens/Faculty/faculty_notifications.dart';
+import 'package:college_connect/screens/Faculty/faculty_announcements.dart';
 import 'package:college_connect/screens/profile_gp.dart';
 import 'package:college_connect/screens/CGPA_calculator.dart';
 import 'package:college_connect/screens/Payment.dart';
+import 'package:college_connect/screens/Faculty/faculty_annoucementClassSelect.dart';
+import 'package:college_connect/screens/Faculty/faculty_makeAnnoucement.dart';
+import 'package:college_connect/screens/Faculty/faculty_assignmentClassSelect.dart';
+import 'package:college_connect/screens/Faculty/faculty_getAssignments.dart';
+import 'package:college_connect/screens/Faculty/faculty_assignments.dart';
+import 'package:college_connect/screens/Faculty/faculty_courses.dart';
+import 'package:college_connect/screens/student_courses.dart';
+import 'package:college_connect/screens/student_tabView.dart';
+import 'package:college_connect/screens/timetable.dart';
 
 class AppRoutes {
   static const String login = '/';
@@ -25,26 +35,49 @@ class AppRoutes {
   static const String facultyHome = '/facultyHome';
   static const String facultyAttendance = '/facultyAttendance';
   static const String facultyNotifications = '/facultyNotifications';
-  static const String profile_gp = "/profile_gp";
+  static const String profileGp = "/profileGp";
   static const String cgpaCalculator = '/cgpaCalculator';
   static const String paymentHome = '/paymentHome';
+  static const String facultyAnnoucements = '/facultyAnnouncements';
+  static const String facultyAnnoucementClassSelect =
+      '/facultyAnnouncementClassSelect';
+  static const String facultyMakeAnnoucement = '/facultyMakeAnnouncement';
+  static const String facultyAssignmentClassSelect =
+      '/facultyAssignmentClassSelect';
+  static const String facultyGetAssignments = '/facultyGetAssignments';
+  static const String facultyAssignments = '/facultyAssignments';
+  static const String facultyCourses = '/facultyCourses';
+  static const String studentTabs = '/studentTabs';
 
+  static const String studentCourses = '/studentCourses';
+  static const String marks = '/marks';
+  static const String timetable = "/timetable";
   static Map<String, WidgetBuilder> define() {
     return {
       login: (context) => LoginScreen(),
       home: (context) => HomePage(),
       attendance: (context) => AttendancePage(),
-      map: (context) => MapPage(),
+      map: (context) => GeoJsonDemo(),
       profile: (context) => ProfilePage(),
       notifications: (context) => NotificationsPage(),
       assignments: (context) => AssignmentsPage(),
       facultyHome: (context) => FacultyHomePage(),
       facultyAttendance: (context) => FacultyAttendancePage(),
       facultyNotifications: (context) => FacultyNotificationsPage(),
-      profile_gp: (context) => Profile_gp(),
+      profileGp: (context) => Profile_gp(),
       cgpaCalculator: (context) => CGPACalculator(),
       paymentHome: (context) => PaymentHome(),
-      // Add more routes as needed
+      facultyAnnoucements: (context) => FacultyAnnouncementPage(),
+      facultyAnnoucementClassSelect: (context) => SelectCoursesPage(),
+      facultyMakeAnnoucement: (context) => MakeAnnouncementPage(),
+      facultyAssignmentClassSelect: (context) =>
+          FacultyAssignmentClassSelectPage(),
+      facultyGetAssignments: (context) =>
+          FacultyGetAssignmentsPage(fetchCourseId: () => ''),
+      facultyAssignments: (context) => FacultyAssignmentsPage(),
+      facultyCourses: (context) => FacultyCoursesPage(),
+      studentTabs: (context) => TabPage(),
+      timetable: (context) => TimetablePage(),
     };
   }
 }

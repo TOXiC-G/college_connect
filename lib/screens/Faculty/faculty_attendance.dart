@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../common/navbar.dart';
+import '../../common/appbar.dart';
 import 'package:dio/dio.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
+import '../../common/dio.config.dart';
 
 class Student {
   final String id;
@@ -68,14 +70,16 @@ class _FacultyAttendancePageState extends State<FacultyAttendancePage> {
     // const String apiUrl = 'http://192.168.0.104:8000/api/faculty/get_courses/';
     const String apiUrl =
         'http://147.185.221.17:22244/api/faculty/get_courses/'; //Playit
+
     String? id = await secureStorage.read(key: 'id');
     try {
-      final dio = Dio();
-      String? token = await secureStorage.read(key: 'accessToken');
-      String tokenString = token.toString();
-      dio.options.headers['Authorization'] = 'Bearer $tokenString';
-      final Response response = await dio.post(
-        apiUrl,
+      final dioClient = DioClient();
+      await dioClient.setAuthorizationHeader();
+      // String? token = await secureStorage.read(key: 'accessToken');
+      // String tokenString = token.toString();
+      // dioClient.dio.options.headers['Authorization'] = 'Bearer $tokenString';
+      final Response response = await dioClient.dio.post(
+        '/api/faculty/get_courses/',
         data: {
           'faculty_id': id,
         },
@@ -123,12 +127,12 @@ class _FacultyAttendancePageState extends State<FacultyAttendancePage> {
     const String apiUrl =
         'http://147.185.221.17:22244/api/faculty/get_course_students/'; //Playit
     try {
-      final dio = Dio();
+      final dioClient = DioClient();
       String? token = await secureStorage.read(key: 'accessToken');
       String tokenString = token.toString();
-      dio.options.headers['Authorization'] = 'Bearer $tokenString';
-      final Response response = await dio.post(
-        apiUrl,
+      dioClient.dio.options.headers['Authorization'] = 'Bearer $tokenString';
+      final Response response = await dioClient.dio.post(
+        '/api/faculty/get_course_students/',
         data: {
           'course_id': courseId,
         },
@@ -187,18 +191,20 @@ class _FacultyAttendancePageState extends State<FacultyAttendancePage> {
   }
 
   Future setAttendance(BuildContext context, courseId, date, attendance) async {
+    print("HERE");
     const secureStorage = FlutterSecureStorage();
     // const String apiUrl =
     //     'http://192.168.0.104:8000/api/faculty/set_course_attendance/';
     const String apiUrl =
         'http://147.185.221.17:22244/api/faculty/set_course_attendance/'; //Playit
     try {
-      final dio = Dio();
-      String? token = await secureStorage.read(key: 'accessToken');
-      String tokenString = token.toString();
-      dio.options.headers['Authorization'] = 'Bearer $tokenString';
-      final Response response = await dio.post(
-        apiUrl,
+      final dioClient = DioClient();
+      await dioClient.setAuthorizationHeader();
+      // String? token = await secureStorage.read(key: 'accessToken');
+      // String tokenString = token.toString();
+      // dioClient.dio.options.headers['Authorization'] = 'Bearer $tokenString';
+      final Response response = await dioClient.dio.post(
+        '/api/faculty/set_course_attendance/',
         data: {
           'course_id': courseId,
           'date': date.toString(),
@@ -259,11 +265,8 @@ class _FacultyAttendancePageState extends State<FacultyAttendancePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          title: Text(
-        'ATTENDANCE',
-        style: TextStyle(color: Color(0xFF202244), fontFamily: 'Jost'),
-      )),
+      appBar:
+          CommonAppBar(title: 'ATTENDANCE', automaticallyImplyLeading: true),
       body: Padding(
           padding: const EdgeInsets.all(10.0),
           child: Column(
@@ -396,7 +399,7 @@ class _FacultyAttendancePageState extends State<FacultyAttendancePage> {
             ],
           )),
       bottomNavigationBar: CommonBottomNavigationBar(
-        currentIndex: 0, // Set the index according to the current page
+        currentIndex: 2, // Set the index according to the current page
         onItemSelected: (index) {
           // Handle navigation to different pages
           // You can use Navigator to push/pop pages as needed
