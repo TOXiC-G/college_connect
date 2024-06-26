@@ -1,3 +1,4 @@
+import 'package:college_connect/screens/Faculty/faculty_singleSubmission.dart';
 import 'package:flutter/material.dart';
 import 'package:college_connect/common/appbar.dart';
 import 'package:college_connect/common/navbar.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../common/dio.config.dart';
 import 'package:dio/dio.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:intl/intl.dart';
 
 class Question {
   final String title;
@@ -44,7 +46,7 @@ class Assignment {
 
   factory Assignment.fromJson(Map<String, dynamic> json) {
     return Assignment(
-      assignmentNo: json['assignment_no'].toString(),
+      assignmentNo: json['a_no'].toString(),
       totalMarks: json['total_marks'].toString(),
       type: json['type'].toString(),
       submissionDate: json['submission_date'].toString(),
@@ -54,6 +56,35 @@ class Assignment {
           .toList(),
       attachments:
           json['attachments'] == null ? null : json['attachments'].toString(),
+    );
+  }
+}
+
+class Submission {
+  final String submissionId;
+  final String student;
+  final String marks;
+  final String submittedAt;
+  final String status;
+  final String attachment;
+
+  Submission({
+    required this.submissionId,
+    required this.student,
+    required this.marks,
+    required this.submittedAt,
+    required this.status,
+    required this.attachment,
+  });
+
+  factory Submission.fromJson(Map<String, dynamic> json) {
+    return Submission(
+      submissionId: json['submission_id'].toString(),
+      student: json['student'].toString(),
+      marks: json['marks'].toString(),
+      submittedAt: json['submitted_at'].toString(),
+      status: json['graded'].toString(),
+      attachment: json['attachment'].toString(),
     );
   }
 }
@@ -74,6 +105,7 @@ class _FacultySingleAssignmentPageState
     extends State<FacultySingleAssignmentPage> {
   late String assignmentId;
   late Assignment assignment;
+  late List<Submission> submissions;
   bool render = false;
 
   void initState() {
@@ -97,6 +129,9 @@ class _FacultySingleAssignmentPageState
         print(response.data);
         setState(() {
           assignment = Assignment.fromJson(response.data);
+          submissions = (response.data['submissions'] as List)
+              .map((submission) => Submission.fromJson(submission))
+              .toList();
         });
         render = true;
         print(assignment);
@@ -152,28 +187,38 @@ class _FacultySingleAssignmentPageState
                 Column(
                   children: [
                     Text('Attachment:'),
-                    Column(children: [
-                      Card(
-                        child: InkWell(
-                          onTap: () async {
-                            final dioClient = DioClient();
-                            print(
-                                '${dioClient.dio.options.baseUrl}${assignment.attachments!}');
-                            if (assignment.attachments != null &&
-                                !await launchUrl(Uri.parse(
-                                    '${dioClient.dio.options.baseUrl}${assignment.attachments!}'))) {
-                              throw 'Could not launch $assignment.attachments';
-                            }
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text('Open Attachment'),
+                    Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Card(
+                            child: InkWell(
+                              onTap: () async {
+                                final dioClient = DioClient();
+                                print(
+                                    '${dioClient.dio.options.baseUrl}${assignment.attachments!}');
+                                if (assignment.attachments != null &&
+                                    !await launchUrl(Uri.parse(
+                                        '${dioClient.dio.options.baseUrl}${assignment.attachments!}'))) {
+                                  throw 'Could not launch $assignment.attachments';
+                                }
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text('Open Attachment'),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                    ]),
+                        ]),
                   ],
                 ),
+              Text(
+                'Submissions',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
+              _buildSubmissionCards(),
             ])),
         bottomNavigationBar: CommonBottomNavigationBar(
           // Add your navigation items here
@@ -193,5 +238,51 @@ class _FacultySingleAssignmentPageState
             currentIndex: 0, onItemSelected: (value) => {}),
       );
     }
+  }
+
+  Widget _buildSubmissionCards() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: submissions
+          .map((submission) => Padding(
+              padding: EdgeInsets.only(top: 8.0),
+              child: InkWell(
+                onTap: () => {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => FacultySingleSubmission(
+                        submissionId: submission.submissionId,
+                      ),
+                    ),
+                  )
+                },
+                child: Card(
+                  surfaceTintColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(
+                    side: BorderSide(
+                      color: submission.status == 'true'
+                          ? Colors.green
+                          : Colors.red,
+                      width: 2.0, // Set the width of the border
+                    ),
+                    borderRadius: BorderRadius.circular(
+                        8), // Optional: if you want rounded corners
+                  ),
+                  child: Padding(
+                      padding: EdgeInsets.all(10.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Student: ${submission.student}'),
+                          Text('Marks: ${submission.marks}'),
+                          Text(
+                              'Submitted On: ${DateFormat('dd-MM-yyyy @ HH:mm').format(DateTime.parse(submission.submittedAt))}'),
+                        ],
+                      )),
+                ),
+              )))
+          .toList(),
+    );
   }
 }

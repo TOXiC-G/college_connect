@@ -1,3 +1,5 @@
+import 'package:college_connect/screens/Faculty/faculty_singleAssignment.dart';
+import 'package:college_connect/screens/student_singleAssignment.dart';
 import 'package:flutter/material.dart';
 import '../common/navbar.dart';
 import '../common/appbar.dart';
@@ -157,6 +159,7 @@ class AssignmentsPageState extends State<AssignmentsPage> {
                       ),
                       for (Assignment assignment in assignmentList[courseName]!)
                         _buildNotificationContainer(
+                          assignment.assignmentId,
                           'Assignment ' + assignment.assignmentNo,
                           assignment.dueDate,
                           assignment.uploadedBy,
@@ -210,6 +213,7 @@ class AssignmentsPageState extends State<AssignmentsPage> {
   }
 
   Widget _buildNotificationContainer(
+    String assignmentId,
     String title,
     String dueDate,
     String uploadedBy,
@@ -219,6 +223,12 @@ class AssignmentsPageState extends State<AssignmentsPage> {
     return GestureDetector(
       onTap: () {
         // Handle onTap event
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => Student_singleAssignmentPage(
+                      assignmentId: assignmentId,
+                    )));
         print(courseId);
       },
       child: Container(

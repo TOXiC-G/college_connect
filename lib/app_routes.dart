@@ -23,6 +23,8 @@ import 'package:college_connect/screens/Faculty/faculty_courses.dart';
 import 'package:college_connect/screens/student_courses.dart';
 import 'package:college_connect/screens/student_tabView.dart';
 import 'package:college_connect/screens/timetable.dart';
+import 'package:college_connect/screens/FeedbackForm.dart';
+import 'package:college_connect/screens/student_singleAssignment.dart';
 
 class AppRoutes {
   static const String login = '/';
@@ -52,6 +54,8 @@ class AppRoutes {
   static const String studentCourses = '/studentCourses';
   static const String marks = '/marks';
   static const String timetable = "/timetable";
+  static const String feedbackForm = '/feedbackForm';
+  static const String studentSingleAssignment = '/studentSingleAssignment';
   static Map<String, WidgetBuilder> define() {
     return {
       login: (context) => LoginScreen(),
@@ -78,6 +82,10 @@ class AppRoutes {
       facultyCourses: (context) => FacultyCoursesPage(),
       studentTabs: (context) => TabPage(),
       timetable: (context) => TimetablePage(),
+      feedbackForm: (context) => FeedbackForm(),
+      studentSingleAssignment: (context) => Student_singleAssignmentPage(
+            assignmentId: "",
+          ),
     };
   }
 }

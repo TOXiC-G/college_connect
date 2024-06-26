@@ -114,7 +114,8 @@ class _FacultyGetAssignmentsPageState extends State<FacultyGetAssignmentsPage> {
           children: [
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/facultyAssignments');
+                Navigator.pushNamed(context, '/facultyAssignments',
+                    arguments: selectedCourseId);
               },
               style: ElevatedButton.styleFrom(
                 primary: Color(0xFF0961F5), // Background color

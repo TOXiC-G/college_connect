@@ -86,6 +86,18 @@ class CommonSideBar extends StatelessWidget {
                 // Update UI based on drawer item tap
               },
             ),
+            ListTile(
+              title: Center(
+                child: Text(
+                  'FeedBack Form',
+                  style: TextStyle(fontSize: 20), // Increase font size
+                ),
+              ),
+              onTap: () {
+                Navigator.pushNamed(context, '/feedbackForm');
+                // Update UI based on drawer item tap
+              },
+            ),
             Container(
               padding: EdgeInsets.symmetric(
                   horizontal: 20), // Add horizontal padding

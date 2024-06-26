@@ -15,6 +15,7 @@ class DioClient {
   DioClient._internal() : _dio = Dio() {
     BaseOptions options = BaseOptions(
       baseUrl: "http://192.168.0.105:8000/",
+      // baseUrl: "http://147.185.221.17:22244/",
       connectTimeout: Duration(milliseconds: 5000),
       receiveTimeout: Duration(milliseconds: 3000),
     );

@@ -160,7 +160,7 @@ class _FacultyCoursesPageState extends State<FacultyCoursesPage> {
                               side: BorderSide(
                                 color: Colors.indigo.shade800,
                                 width: 1,
-                              ),
+                            ),
                             ),
                             child: Padding(
                               padding: EdgeInsets.only(

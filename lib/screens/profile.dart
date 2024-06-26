@@ -59,6 +59,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   Map<String, dynamic> _profile = {};
+  String? _role = "";
 
   @override
   void initState() {
@@ -76,6 +77,9 @@ class _ProfilePageState extends State<ProfilePage> {
     final secureStorage = FlutterSecureStorage();
     String? id = await secureStorage.read(key: 'id');
     String? role = await secureStorage.read(key: 'role');
+    if (role != null) {
+      setState(() => _role = role.toUpperCase());
+    }
     try {
       final dioClient = DioClient();
       await dioClient.setAuthorizationHeader();
@@ -156,7 +160,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
               // Text 'STUDENT ACCOUNT DETAILS'
               Text(
-                'STUDENT ACCOUNT DETAILS',
+                '$_role ACCOUNT DETAILS',
                 style: TextStyle(
                   fontFamily: 'Jost',
                   fontSize: 18,

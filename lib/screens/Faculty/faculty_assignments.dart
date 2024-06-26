@@ -29,6 +29,7 @@ class _FacultyAssignmentsPageState extends State<FacultyAssignmentsPage> {
   Widget build(BuildContext context) {
     final String selectedCourseId =
         ModalRoute.of(context)!.settings.arguments as String;
+    print(selectedCourseId);
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Assignment/Test'),

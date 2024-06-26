@@ -300,39 +300,6 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                     ),
                   ),
                   SizedBox(width: 10),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/timetable');
-                      },
-                      style: ElevatedButton.styleFrom(
-                        surfaceTintColor: Colors.white,
-                        backgroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(vertical: 15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(8), // Rounded corners
-                          side:
-                              BorderSide(color: Colors.indigo), // Border color
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text('Itenary',
-                              style: (TextStyle(
-                                color: Colors.indigo,
-                                fontSize: 16,
-                              ))),
-                          Icon(
-                            Icons.arrow_forward,
-                            size: 18,
-                            color: Colors.indigo,
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
                 ],
               )
 

@@ -85,6 +85,8 @@ class LoginScreen extends StatelessWidget {
     final Response response = await dioClient.dio.post(
       '/api/login/',
       data: {
+        // 'email': '	aparnaRane@gmail.com',
+        // 'password': 'faculty_password',
         'email': 'defaultFaculty@example.com',
         'password': 'faculty_password',
       },
