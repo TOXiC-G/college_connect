@@ -191,7 +191,6 @@ class _FacultyAttendancePageState extends State<FacultyAttendancePage> {
   }
 
   Future setAttendance(BuildContext context, courseId, date, attendance) async {
-    print("HERE");
     const secureStorage = FlutterSecureStorage();
     // const String apiUrl =
     //     'http://192.168.0.104:8000/api/faculty/set_course_attendance/';

@@ -23,6 +23,7 @@ class CommonSideBar extends StatelessWidget {
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
+              color: Colors.white,
               icon: Icon(Icons.menu),
               onPressed: () {
                 Scaffold.of(context).openDrawer();
@@ -32,6 +33,7 @@ class CommonSideBar extends StatelessWidget {
         ),
         actions: [
           IconButton(
+            color: Colors.white,
             icon: Icon(Icons.notifications),
             onPressed: () {
               Navigator.pushNamed(context, '/notifications');
@@ -74,6 +76,7 @@ class CommonSideBar extends StatelessWidget {
                 ),
               ),
             ),
+
             ListTile(
               title: Center(
                 child: Text(
@@ -86,6 +89,14 @@ class CommonSideBar extends StatelessWidget {
                 // Update UI based on drawer item tap
               },
             ),
+            Container(
+              padding: EdgeInsets.symmetric(
+                  horizontal: 20), // Add horizontal padding
+              child: Divider(
+                  // Adjust thickness as needed
+
+                  ),
+            ),
             ListTile(
               title: Center(
                 child: Text(
@@ -95,6 +106,46 @@ class CommonSideBar extends StatelessWidget {
               ),
               onTap: () {
                 Navigator.pushNamed(context, '/feedbackForm');
+                // Update UI based on drawer item tap
+              },
+            ),
+            Container(
+              padding: EdgeInsets.symmetric(
+                  horizontal: 20), // Add horizontal padding
+              child: Divider(
+                  // Adjust thickness as needed
+
+                  ),
+            ),
+            ListTile(
+              title: Center(
+                child: Text(
+                  'Exam Registration',
+                  style: TextStyle(fontSize: 20), // Increase font size
+                ),
+              ),
+              onTap: () {
+                Navigator.pushNamed(context, '/examRegistration');
+                // Update UI based on drawer item tap
+              },
+            ),
+            Container(
+              padding: EdgeInsets.symmetric(
+                  horizontal: 20), // Add horizontal padding
+              child: Divider(
+                  // Adjust thickness as needed
+
+                  ),
+            ),
+            ListTile(
+              title: Center(
+                child: Text(
+                  'Exam Reval Form',
+                  style: TextStyle(fontSize: 20), // Increase font size
+                ),
+              ),
+              onTap: () {
+                Navigator.pushNamed(context, '/examReval');
                 // Update UI based on drawer item tap
               },
             ),

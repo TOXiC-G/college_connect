@@ -98,21 +98,34 @@ class _FacultyAssignmentClassSelectPageState
         title: 'Select Class',
         automaticallyImplyLeading: true,
       ),
-      body: ListView.builder(
-        itemCount: _courseList.length,
-        itemBuilder: (context, index) {
-          final course = _courseList[index];
-          return ListTile(
-            title: Text(course.courseName),
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => FacultyGetAssignmentsPage(
-                          fetchCourseId: () => course.courseId)));
-            },
-          );
-        },
+      body: Column(
+        children: [
+          Expanded(
+            // Wrap ListView with Expanded
+            child: ListView.builder(
+              itemCount: _courseList.length,
+              itemBuilder: (context, index) {
+                final course = _courseList[index];
+                return ListTile(
+                  title: Text(course.courseName),
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => FacultyGetAssignmentsPage(
+                                fetchCourseId: () => course.courseId)));
+                  },
+                );
+              },
+            ),
+          ),
+          // Padding(
+          //     padding: EdgeInsets.all(8.0),
+          //     child:
+          //         ElevatedButton(onPressed: () => {
+
+          //         }, child: Text('View ITs')))
+        ],
       ),
       bottomNavigationBar: CommonBottomNavigationBar(
         currentIndex: 0,

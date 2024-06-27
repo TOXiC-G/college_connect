@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:college_connect/common/appbar.dart';
+import 'package:college_connect/common/navbar.dart';
 
 class CGPACalculator extends StatefulWidget {
   @override
@@ -28,23 +30,14 @@ class _CGPACalculatorState extends State<CGPACalculator> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('CGPA Calculator'),
+      appBar: CommonAppBar(
+        title: 'CGPA Calculator',
+        automaticallyImplyLeading: true,
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: ListView(
           children: [
-            Center(
-              child: Text(
-                'CGPA CALCULATOR',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blue,
-                ),
-              ),
-            ),
             SizedBox(height: 20),
             TextField(
               keyboardType: TextInputType.number,

@@ -1,3 +1,4 @@
+import 'package:college_connect/screens/student_selectMarks.dart';
 import 'package:flutter/material.dart';
 import '../../common/appbar.dart';
 import '../../common/navbar.dart';
@@ -322,7 +323,8 @@ class _StudentSingleCoursePageState extends State<StudentSingleCoursePage> {
                     padding: EdgeInsets.only(
                         right: 8.0), // Adjust the value as needed
                     child: ElevatedButton(
-                      onPressed: () => {},
+                      onPressed: () =>
+                          {Navigator.pushNamed(context, '/assignments')},
                       child: Text('ASSIGNMENTS'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
@@ -338,7 +340,14 @@ class _StudentSingleCoursePageState extends State<StudentSingleCoursePage> {
                     padding: EdgeInsets.only(
                         left: 8.0), // Adjust the value as needed
                     child: ElevatedButton(
-                      onPressed: () => {},
+                      onPressed: () => {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => StudentSelectMarksPage(
+                                      courseId: courseId,
+                                    )))
+                      },
                       child: Text('IT MARKS'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,

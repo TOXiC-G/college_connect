@@ -104,12 +104,13 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
             if (day == 'mon') {
               // print(day);
               // String currentTime = _getCurrentTime();
-              String currentTime = '11:30';
+              String currentTime = '09:50';
               int currentHour = int.parse(currentTime.split(':')[0]);
 
               courses.forEach((hour, courseInfo) {
                 int hourSplit = int.parse(hour.substring(0, 2));
-                if (hour.substring(0, 2) == currentHour.toString()) {
+                if (int.parse(hour.substring(0, 2)) ==
+                    int.parse(currentHour.toString())) {
                   print("YEET");
                   int temp = hourSplit + 1;
                   String tempHour = '$temp${hour.substring(2)}';

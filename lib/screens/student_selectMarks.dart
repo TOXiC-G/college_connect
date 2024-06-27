@@ -8,6 +8,23 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../common/navbar.dart';
 import '../../common/appbar.dart';
 
+class Submission {
+  final bool graded;
+  final String marks;
+
+  Submission({
+    required this.graded,
+    required this.marks,
+  });
+
+  factory Submission.fromJson(Map<String, dynamic> json) {
+    return Submission(
+      marks: json['marks'].toString(),
+      graded: json['graded'],
+    );
+  }
+}
+
 class Assignment {
   final String assignmentId;
   final String type;
@@ -16,6 +33,7 @@ class Assignment {
   final String totalMarks;
   final String date;
   final String submissionDate;
+  final Submission? submission;
 
   Assignment({
     required this.assignmentId,
@@ -25,6 +43,7 @@ class Assignment {
     required this.totalMarks,
     required this.date,
     required this.submissionDate,
+    this.submission,
   });
 
   factory Assignment.fromJson(Map<String, dynamic> json) {
@@ -36,20 +55,22 @@ class Assignment {
       totalMarks: json['total_marks'].toString(),
       date: json['date'].toString(),
       submissionDate: json['submission_date'].toString(),
+      submission: json.containsKey('submission')
+          ? Submission.fromJson(json['submission'])
+          : null,
     );
   }
 }
 
-class FacultyGetAssignmentsPage extends StatefulWidget {
-  final Function fetchCourseId;
-  const FacultyGetAssignmentsPage({Key? key, required this.fetchCourseId})
+class StudentSelectMarksPage extends StatefulWidget {
+  final String courseId;
+  const StudentSelectMarksPage({Key? key, required this.courseId})
       : super(key: key);
   @override
-  _FacultyGetAssignmentsPageState createState() =>
-      _FacultyGetAssignmentsPageState();
+  _StudentSelectMarksPageState createState() => _StudentSelectMarksPageState();
 }
 
-class _FacultyGetAssignmentsPageState extends State<FacultyGetAssignmentsPage> {
+class _StudentSelectMarksPageState extends State<StudentSelectMarksPage> {
   late Future<List<Assignment>>? _futureAssignments;
   String? selectedCourseId;
 
@@ -57,7 +78,7 @@ class _FacultyGetAssignmentsPageState extends State<FacultyGetAssignmentsPage> {
   void initState() {
     super.initState();
     // print("HI");
-    selectedCourseId = widget.fetchCourseId();
+    selectedCourseId = widget.courseId;
     _futureAssignments =
         _fetchAssignments(selectedCourseId); // Call after data is available
     // print("I");
@@ -72,9 +93,9 @@ class _FacultyGetAssignmentsPageState extends State<FacultyGetAssignmentsPage> {
       final dioClient = DioClient();
       await dioClient.setAuthorizationHeader();
       final Response response = await dioClient.dio.post(
-        'api/faculty/get_assignments/',
+        'api/student/get_all_assignments/',
         data: {
-          'faculty_id': id,
+          'student_id': id,
           'course_id': selectedCourseId,
         },
       );
@@ -113,24 +134,6 @@ class _FacultyGetAssignmentsPageState extends State<FacultyGetAssignmentsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/facultyAssignments',
-                    arguments: selectedCourseId);
-              },
-              style: ElevatedButton.styleFrom(
-                primary: Color(0xFF0961F5), // Background color
-                onPrimary: Colors.white, // Text color
-                padding: EdgeInsets.symmetric(vertical: 15), // Larger size
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Add Assignment/Test'),
-                  Icon(Icons.arrow_forward, size: 18), // Arrow icon
-                ],
-              ),
-            ),
             if (selectedCourseId == null || _futureAssignments == null)
               Expanded(
                 child: Center(child: CircularProgressIndicator()),
@@ -152,58 +155,36 @@ class _FacultyGetAssignmentsPageState extends State<FacultyGetAssignmentsPage> {
                         itemBuilder: (context, index) {
                           final assignment = snapshot.data![index];
                           return GestureDetector(
-                              onTap: () => {
-                                    if (assignment.type == 'IT')
-                                      {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    FacultySingleITPage(
-                                                      assignmentId: assignment
-                                                          .assignmentId,
-                                                    )))
-                                      }
-                                    else
-                                      {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                FacultySingleAssignmentPage(
-                                              assignmentId:
-                                                  assignment.assignmentId,
-                                            ),
-                                          ),
-                                        )
-                                      }
-                                  },
                               child: Card(
-                                surfaceTintColor: Colors.transparent,
-                                margin: EdgeInsets.only(top: 8),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: Colors.indigo.shade800,
-                                          width: 1), // Border color
-                                      borderRadius: BorderRadius.circular(10)),
-                                  child: ListTile(
-                                    title: Text(
-                                      '${assignment.type}: ${assignment.assignmentNo}',
-                                    ),
-                                    subtitle: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                            'Questions: ${assignment.questionCount}'),
-                                        Text(
-                                            'Total marks: ${assignment.totalMarks}'),
-                                      ],
-                                    ),
-                                  ),
+                            surfaceTintColor: Colors.transparent,
+                            margin: EdgeInsets.only(top: 8),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      color: assignment.submission != null &&
+                                              assignment.submission!.graded
+                                          ? Colors.green
+                                          : Colors.indigo.shade800,
+                                      width: 1), // Border color
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: ListTile(
+                                title: Text(
+                                  '${assignment.type}: ${assignment.assignmentNo}',
                                 ),
-                              ));
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                        'Total marks: ${assignment.totalMarks}'),
+                                    if (assignment.submission != null)
+                                      if (assignment.submission!.graded)
+                                        Text(
+                                            'Your Marks: ${assignment.submission!.marks}'),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ));
                         },
                       );
                     }

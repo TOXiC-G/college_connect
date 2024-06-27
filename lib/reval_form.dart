@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:college_connect/common/appbar.dart';
 
 class RevaluationFormApp extends StatelessWidget {
   @override
@@ -84,8 +85,9 @@ class _RevaluationFormPageState extends State<RevaluationFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Revaluation Form'),
+      appBar: CommonAppBar(
+        title: 'Revaluation Form',
+        automaticallyImplyLeading: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

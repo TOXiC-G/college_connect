@@ -11,6 +11,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:dio/dio.dart';
 import 'dart:core';
+import 'package:college_connect/screens/student_singleCourse.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -79,7 +80,7 @@ class _HomePageState extends State<HomePage> {
         '/api/timetable/',
         data: {
           'id': id,
-          'role': role,
+          'role': 'student',
         },
       );
 
@@ -182,22 +183,11 @@ class _HomePageState extends State<HomePage> {
                 '${_getCurrentDayAndDate()}',
                 style: TextStyle(fontSize: 18, fontFamily: 'Jost'),
               ),
-              SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.search),
-                        hintText: 'Search',
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+
               SizedBox(height: 16),
               if (currentClass != '')
                 _buildClassCard(
+                  id: currentClassId,
                   type: 'current',
                   title: currentClass,
                   time:
@@ -210,6 +200,7 @@ class _HomePageState extends State<HomePage> {
               SizedBox(height: 16),
               if (upcomingClass != '')
                 _buildClassCard(
+                  id: upcomingClassId,
                   type: 'upcoming',
                   title: upcomingClass,
                   time:
@@ -240,7 +231,7 @@ class _HomePageState extends State<HomePage> {
                       label: 'My Marks',
                       icon: PhosphorIcons.checkFat(PhosphorIconsStyle.thin),
                       onTap: () {
-                        Navigator.pushNamed(context, '/marks');
+                        Navigator.pushNamed(context, '/studentMarks');
                       },
                     ),
                   ),
@@ -296,6 +287,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildClassCard({
+    required String id,
     required String title,
     required String type,
     required Color bgColor,
@@ -319,11 +311,12 @@ class _HomePageState extends State<HomePage> {
             Text(time),
             ElevatedButton(
               onPressed: () {
-                if (type == 'current') {
-                  Navigator.pushNamed(context, '/facultyAttendance');
-                } else if (type == 'upcoming') {
-                  Navigator.pushNamed(context, '/facultyClassDetails');
-                }
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => StudentSingleCoursePage(courseId: id),
+                  ),
+                );
               },
               style: ElevatedButton.styleFrom(
                 primary: buttonColor,

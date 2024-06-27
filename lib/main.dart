@@ -17,6 +17,7 @@ class MyApp extends StatelessWidget {
         // Add more providers if needed
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'College Connect',
         theme: ThemeData(
           primarySwatch: Colors.blue,

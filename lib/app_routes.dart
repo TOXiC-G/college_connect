@@ -1,4 +1,6 @@
 // lib/app_routes.dart
+import 'package:college_connect/exam_register.dart';
+import 'package:college_connect/reval_form.dart';
 import 'package:flutter/material.dart';
 import 'package:college_connect/screens/home_page.dart';
 import 'package:college_connect/screens/login_screen.dart';
@@ -25,6 +27,7 @@ import 'package:college_connect/screens/student_tabView.dart';
 import 'package:college_connect/screens/timetable.dart';
 import 'package:college_connect/screens/FeedbackForm.dart';
 import 'package:college_connect/screens/student_singleAssignment.dart';
+import 'package:college_connect/screens/studentMarks.dart';
 
 class AppRoutes {
   static const String login = '/';
@@ -56,6 +59,9 @@ class AppRoutes {
   static const String timetable = "/timetable";
   static const String feedbackForm = '/feedbackForm';
   static const String studentSingleAssignment = '/studentSingleAssignment';
+  static const String studentMarks = '/studentMarks';
+  static const String examRegistration = '/examRegistration';
+  static const String examReval = "/examReval";
   static Map<String, WidgetBuilder> define() {
     return {
       login: (context) => LoginScreen(),
@@ -86,6 +92,9 @@ class AppRoutes {
       studentSingleAssignment: (context) => Student_singleAssignmentPage(
             assignmentId: "",
           ),
+      studentMarks: (context) => StudentMarksScreen(),
+      examRegistration: (context) => SemesterFormPage(),
+      examReval: (context) => RevaluationFormPage(),
     };
   }
 }

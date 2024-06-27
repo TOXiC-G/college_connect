@@ -5,6 +5,8 @@ import "package:college_connect/common/dio.config.dart";
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import "package:college_connect/common/appbar.dart";
+
 // import 'sgpa_extractor.dart';
 
 // void main() {
@@ -81,11 +83,9 @@ class PaymentHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'FEE PAYMENT',
-          textAlign: TextAlign.center,
-        ),
+      appBar: CommonAppBar(
+        title: 'FEE PAYMENT',
+        automaticallyImplyLeading: true,
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -134,12 +134,24 @@ class PaymentHome extends StatelessWidget {
                           borderRadius: BorderRadius.circular(15.0),
                         ),
                         elevation: 4,
-                        child: Center(
-                          child: Text(
-                            'SEMESTER $semester',
-                            style: const TextStyle(
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.bold,
+                        surfaceTintColor: Colors.transparent,
+                        color: Colors.white,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15.0),
+                            border: Border.all(
+                              color: Colors.blue.shade900,
+                              width: 2.0,
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              'SEMESTER $semester',
+                              style: TextStyle(
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue.shade900,
+                              ),
                             ),
                           ),
                         ),

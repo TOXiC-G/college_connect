@@ -142,6 +142,8 @@ class LoginScreen extends StatelessWidget {
       data: {
         'email': 'defaultStudent@example.com',
         'password': 'student_password',
+        // 'email': 'stud20.aas@gec.ac.in',
+        // 'password': 'a_sagar',
       },
     );
 

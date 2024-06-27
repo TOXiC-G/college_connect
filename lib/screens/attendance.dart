@@ -8,6 +8,20 @@ import '../../common/dio.config.dart';
 import 'package:dio/dio.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+class Holiday {
+  final String name;
+  final String date;
+
+  Holiday({required this.name, required this.date});
+
+  factory Holiday.fromJson(Map<String, dynamic> json) {
+    return Holiday(
+      name: json['name'].toString(),
+      date: json['date'].toString(),
+    );
+  }
+}
+
 class Course {
   final String courseId;
   final String courseCode;
@@ -38,6 +52,8 @@ class AttendancePage extends StatefulWidget {
 }
 
 class _AttendancePageState extends State<AttendancePage> {
+  late List<Holiday> holidays = [];
+  late List<int> holidayDates = [];
   late List<Course> courseList = [];
   // Placeholder for fetched attendance data
   late List<int> presentDates = [];
@@ -127,10 +143,31 @@ class _AttendancePageState extends State<AttendancePage> {
     }
   }
 
+  Future<void> fetchHolidays() async {
+    final dioClient = DioClient();
+    await dioClient.setAuthorizationHeader();
+    final Response response1 = await dioClient.dio.post(
+      'api/get_holidays/',
+      data: {
+        'month': selectedMonth.month,
+        'year': selectedMonth.year,
+      },
+    );
+    if (response1.statusCode == 200) {
+      List<dynamic> holidayData = response1.data;
+      setState(() => holidays =
+          holidayData.map((holiday) => Holiday.fromJson(holiday)).toList());
+      setState(() => holidayDates = holidays
+          .map((holiday) => int.parse(holiday.date.split('-')[2]))
+          .toList());
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     fetchCourses(context); // Call your API function here
+    fetchHolidays();
   }
 
   @override
@@ -199,6 +236,7 @@ class _AttendancePageState extends State<AttendancePage> {
               calendarFormat: CalendarFormat.month,
               onFormatChanged: (format) {},
               onPageChanged: (focusedDay) {
+                fetchHolidays();
                 selectedMonth = focusedDay;
                 if (selectedCourse != null) {
                   fetchAttendance(selectedCourse!);
@@ -231,8 +269,13 @@ class _AttendancePageState extends State<AttendancePage> {
                         ),
                       ),
                     );
+                  } else if (holidayDates.contains(date.day)) {
+                    return Container(
+                        margin: const EdgeInsets.all(4.0),
+                        alignment: Alignment.center,
+                        child: Text("${date.day}",
+                            style: TextStyle(color: Colors.red)));
                   } else {
-                    // Day is not present, leave it unchanged
                     return null;
                   }
                 },
@@ -254,6 +297,17 @@ class _AttendancePageState extends State<AttendancePage> {
                 titleCentered: true,
               ),
             ),
+            Expanded(
+              child: ListView(
+                shrinkWrap: true,
+                children: holidays
+                    .map((holiday) => ListTile(
+                          title: Text(holiday.name),
+                          subtitle: Text(holiday.date),
+                        ))
+                    .toList(),
+              ),
+            )
           ],
         ),
       ),
